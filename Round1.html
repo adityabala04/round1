@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Lending Library</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #1a1a1a;
+            color: #fff;
+        }
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: #333;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:hover {
+            background-color: #555;
+        }
+        .btn-borrow {
+            padding: 8px 12px;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .btn-borrow:disabled {
+            background-color: #777;
+            cursor: not-allowed;
+        }
+        .container {
+            width: 80%;
+            margin: 0 auto;
+            overflow: auto;
+        }
+        #borrowForm {
+            display: none;
+            margin-top: 20px;
+            background-color: #555;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        #borrowForm input, #borrowForm button {
+            margin-top: 10px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+        #borrowForm input[type="email"] {
+            margin-top: 10px;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ONLINE LIBRARY</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Author</th>
+                    <th>Available</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="book-list">
+                
+            </tbody>
+        </table>
+        <div id="borrowForm">
+            <h2>Borrow Book</h2>
+            <form id="borrowFormElement">
+                <input type="hidden" id="bookId">
+                <input type="text" id="bookTitle" readonly>
+                <input type="email" id="userEmail" placeholder="Enter your email" required>
+                <button type="submit">Borrow</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        const books = [
+            { id: 1, title: "Book1", author: "Auth1", available: true },
+            { id: 2, title: "Book2", author: "Auth2", available: true },
+            { id: 3, title: "Book3", author: "Auth3", available: false },
+            { id: 4, title: "Book4", author: "Auth4", available: true },
+            { id: 5, title: "Book5", author: "Auth5", available: false },
+            { id: 6, title: "Book6", author: "Auth6", available: true },
+            { id: 7, title: "Book7", author: "Auth7", available: true },
+            { id: 8, title: "Book8", author: "Auth8", available: true },
+            { id: 9, title: "Book9", author: "Auth9", available: true },
+            { id: 10, title: "Book10", author: "Auth10", available: true }
+        ];
+
+        function populateBookList() {
+            const bookList = document.getElementById('book-list');
+            bookList.innerHTML = '';
+            books.forEach(book => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${book.title}</td>
+                    <td>${book.author}</td>
+                    <td>${book.available ? 'Yes' : 'No'}</td>
+                    <td>
+                        <button class="btn-borrow" onclick="showBorrowForm(${book.id})" ${!book.available ? 'disabled' : ''}>
+                            Borrow
+                        </button>
+                    </td>
+                `;
+                bookList.appendChild(row);
+            });
+        }
+
+        function showBorrowForm(bookId) {
+            const book = books.find(b => b.id === bookId);
+            document.getElementById('bookId').value = book.id;
+            document.getElementById('bookTitle').value = book.title;
+            document.getElementById('borrowForm').style.display = 'block';
+        }
+
+        document.getElementById('borrowFormElement').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const bookId = document.getElementById('bookId').value;
+            const userEmail = document.getElementById('userEmail').value;
+
+            if (userEmail === '') {
+                alert('Please enter your email.');
+                return;
+            }
+
+            const bookIndex = books.findIndex(b => b.id == bookId);
+            books[bookIndex].available = false;
+
+            populateBookList();
+            document.getElementById('borrowForm').style.display = 'none';
+            document.getElementById('userEmail').value = '';
+            alert('Book borrowed successfully!');
+        });
+
+        window.onload = populateBookList;
+    </script>
+</body>
+</html>
